@@ -1,0 +1,60 @@
+{
+  "name": "Internship WhatsApp Alert",
+  "nodes": [
+    {
+      "parameters": {
+        "cronExpression": "0 7 * * *",
+        "timezone": "Asia/Kolkata"
+      },
+      "name": "Cron Trigger",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [200, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://your-backend.com/internships",
+        "responseFormat": "json",
+        "options": {}
+      },
+      "name": "Fetch Internships",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [400, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "return [\n  {\n    json: {\n      message: items.map(item => {\n        const i = item.json;\n        return `🔹 ${i.title} – ${i.company}\\n📍 ${i.location} | 💰 ${i.stipend} | ⏳ ${i.duration}\\n🔗 ${i.link}\\n🗓️ Deadline: ${i.deadline}`;\n      }).join('\\n\\n')\n    }\n  }\n];"
+      },
+      "name": "Format Message",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [600, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://api.ultramsg.com/instance132138/messages/chat",
+        "method": "POST",
+        "authentication": "none",
+        "jsonParameters": true,
+        "options": {},
+        "bodyParametersJson": "{\n  \"to\": \"whatsapp:+919381957960\",\n  \"body\": \"={{ $json.message }}\"\n}"
+      },
+      "name": "Send to WhatsApp",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [800, 300]
+    }
+  ],
+  "connections": {
+    "Cron Trigger": {
+      "main": [["Fetch Internships"]]
+    },
+    "Fetch Internships": {
+      "main": [["Format Message"]]
+    },
+    "Format Message": {
+      "main": [["Send to WhatsApp"]]
+    }
+  }
+}

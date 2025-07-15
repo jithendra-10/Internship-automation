@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: internship-scraper
+    env: python
+    buildCommand: ""
+    startCommand: "python internship_scraper.py"
+    plan: free

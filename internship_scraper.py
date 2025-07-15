@@ -1,3 +1,4 @@
+import os
 from flask import Flask, jsonify
 import requests
 from bs4 import BeautifulSoup
@@ -10,6 +11,10 @@ from selenium.webdriver.common.by import By
 import time
 
 app = Flask(__name__)
+@app.route("/")
+def home():
+    return "Internship Scraper API is running. Visit /internships to get data."
+
 
 # ---------- Internshala ----------
 def scrape_internshala():
@@ -149,4 +154,5 @@ def internships():
 
 # ---------- Main ----------
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0', port=int(os.environ.get("PORT", 5000)))
+
